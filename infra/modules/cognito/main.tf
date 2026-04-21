@@ -29,8 +29,8 @@ resource "aws_cognito_user_pool_client" "this" {
   logout_urls = ["http://localhost:3000/logout"]
 }
 
-resource "aws_cognito_user_pool_admin" "this" {
-  domain       = "${var.project_name}-${var.env}"
+resource "aws_cognito_user_pool_domain" "main" {
+  domain       = "${var.project_name}-${var.env}-domain"
   user_pool_id = aws_cognito_user_pool.this.id
 }
 

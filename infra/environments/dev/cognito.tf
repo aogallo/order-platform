@@ -1,7 +1,5 @@
 module "cognito" {
-  source = "../../modules/cognito"
-
-  project_name = "order_platform"
-
-  env = "dev"
+  source       = "../../modules/cognito"
+  project_name = var.project_name
+  env          = var.env
 }

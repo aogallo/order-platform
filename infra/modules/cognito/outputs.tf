@@ -7,5 +7,5 @@ output "client_id" {
 }
 
 output "domain" {
-  value = aws_cognito_user_pool_domain.this.domain
+  value = aws_cognito_user_pool_domain.main.id
 }

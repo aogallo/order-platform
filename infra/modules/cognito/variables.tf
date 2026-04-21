@@ -1,2 +1,7 @@
-variable "order_platform" {}
-variable "env" {}
+variable "project_name" {
+  type = string
+}
+
+variable "env" {
+  type = string
+}
