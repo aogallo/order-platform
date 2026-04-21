@@ -1,0 +1,49 @@
+name: Terraform Common
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      working-directory:
+        required: true
+        type: string
+      action:
+        required: true
+        type: string # plan | apply
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    permissions:
+      id-token: write
+      contents: read
+    environment: ${{ inputs.env }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/github-actions-role
+          aws-region: us-east-1
+      - name: Terraform Validate
+        run: terraform validate
+      - name: Terraform Plan
+        if: inputs.action == 'plan'
+        run: terraform plan
+      - name: Terraform Plan Output
+        if: inputs.action == 'plan'
+        run: terraform plan -no-color > plan.txt
+      - name: Comment PR
+        if: inputs.action == 'plan'
+        uses: macrocchino/sticky-pull-request-comment@v2
+        with:
+          path: infra/environments/dev/plan.txt
+      - name: Terraform Apply
+        if: inputs.action == 'apply'
+        run: terraform apply -auto-approve

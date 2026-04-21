@@ -1,0 +1,26 @@
+name: Backend Deploy
+on:
+  workflow_call:
+    inputs:
+      service:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/${{ inputs.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 25
+      - run: npm install
+      - run: npm run build
+      - name: Deploy
+        run: npx serverless deploy --stage ${{ inputs.env }}

@@ -1,36 +1,60 @@
-name: Terraform Deploy
+name: Terraform Multi-Env Pipeline
 on:
+  pull_request:
+    paths:
+      - "infra/**"
   push:
     branches:
       - main
     paths:
       - "infra/**"
 jobs:
-  terraform:
-    runs-on: ubuntu-latest
-    defaults:
-      run: working-directory+ infra/environments/dev
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/github-actions-role
-          aws-region: us-east-1
-      - name: Terraform Init
-        run: terraform init
-      - name: Terraform Format
-        run: terraform fmt -check
-      - name: Terraform Validate
-        run: terraform validate
-      - name: Terraform Plan
-        run: terraform plan
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+  # ------------------------
+  # PR → PLAN DEV
+  # ------------------------
+  plan-dev:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: dev
+      working-directory: infra/environments/dev
+      action: plan
+  # ------------------------
+  # PR → PLAN STAGING
+  # ------------------------
+  plan-staging:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: staging
+      working-directory: infra/environments/staging
+      action: plan
+  # ------------------------
+  # DEPLOY DEV
+  # ------------------------
+  deploy-dev:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      working-directory: infra/environments/dev
+      action: apply
+  # ------------------------
+  # DEPLOY STAGING
+  # ------------------------
+  deploy-staging:
+    needs: deploy-dev
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: staging
+      working-directory: infra/environments/staging
+      action: apply
+  # ------------------------
+  # DEPLOY PROD (MANUAL APPROVAL)
+  # ------------------------
+  deploy-prod:
+    needs: deploy-staging
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: prod
+      working-directory: infra/environments/prod
+      action: apply
