@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["type", "orderId", "total"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["order.created"]
+    },
+    "orderId": {
+      "type": "string"
+    },
+    "total": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}
