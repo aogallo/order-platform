@@ -2,8 +2,13 @@
   "devDependencies": {
     "turbo": "^2.9.6"
   },
-  {
-  "packageManager": "npm@8.5.0"
-  },
-  "workspaces": ["apps/*", "packages/*"]
+  "packageManager": "npm@8.5.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+	  "tf:dev": "terraform -chdir=infra/environments/dev",
+	  "tf:init:dev": "terraform -chdir=infra/environments/dev init",
+	  "tf:validate:dev": "terraform -chdir=infra/environments/dev validate",
+	  "tf:plan:dev": "terraform -chdir=infra/environments/dev plan ",
+	  "tf:apply:dev": "terraform -chdir=infra/environments/dev apply"
+  }
 }

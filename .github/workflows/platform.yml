@@ -1,0 +1,77 @@
+name: Full Platform Pipeline
+on:
+  push:
+    branches: [main]
+jobs:
+  # ------------------------
+  # INFRA
+  # ------------------------
+  infra-dev:
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: dev
+      working-directory: infra/environments/dev
+      action: apply
+  # ------------------------
+  # BACKEND
+  # ------------------------
+  backend-dev:
+    needs: infra-dev
+    uses: ./.github/workflows/backend.yml
+    with:
+      service: order-service
+      env: dev
+      # ------------------------
+      # FRONTEND
+      # ------------------------
+  frontend-dev:
+    needs: backend-dev
+    uses: ./.github/workflows/deploy-frontend.yml
+    with:
+      app: admin-web
+      env: dev
+  # ========================
+  # STAGING
+  # ========================
+  infra-staging:
+    needs: frontend-dev
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: staging
+      working-directory: infra/environments/staging
+      action: apply
+  backend-staging:
+    needs: infra-staging
+    uses: ./.github/workflows/backend.yml
+    with:
+      service: order-service
+      env: staging
+  frontend-staging:
+    needs: backend-staging
+    uses: ./.github/workflows/frontend.yml
+    with:
+      app: admin-web
+      env: staging
+  # ========================
+  # PROD (APPROVAL)
+  # ========================
+  infra-prod:
+    needs: frontend-staging
+    environment: prod
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: prod
+      working-directory: infra/environments/prod
+      action: apply
+  backend-prod:
+    needs: infra-prod
+    uses: ./.github/workflows/backend.yml
+    with:
+      service: order-service
+      env: prod
+  frontend-prod:
+    needs: backend-prod
+    uses: ./.github/workflows/frontend.yml
+    with:
+      app: admin-web
+      env: prod

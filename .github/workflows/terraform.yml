@@ -1,0 +1,60 @@
+name: Terraform Multi-Env Pipeline
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+jobs:
+  # ------------------------
+  # PR → PLAN DEV
+  # ------------------------
+  plan-dev:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: dev
+      working-directory: infra/environments/dev
+      action: plan
+  # ------------------------
+  # PR → PLAN STAGING
+  # ------------------------
+  plan-staging:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: staging
+      working-directory: infra/environments/staging
+      action: plan
+  # ------------------------
+  # DEPLOY DEV
+  # ------------------------
+  deploy-dev:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      working-directory: infra/environments/dev
+      action: apply
+  # ------------------------
+  # DEPLOY STAGING
+  # ------------------------
+  deploy-staging:
+    needs: deploy-dev
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: staging
+      working-directory: infra/environments/staging
+      action: apply
+  # ------------------------
+  # DEPLOY PROD (MANUAL APPROVAL)
+  # ------------------------
+  deploy-prod:
+    needs: deploy-staging
+    uses: ./.github/workflows/terraform-common.yml
+    with:
+      env: prod
+      working-directory: infra/environments/prod
+      action: apply
