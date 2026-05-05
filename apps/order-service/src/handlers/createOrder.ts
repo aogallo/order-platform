@@ -13,10 +13,11 @@ type Response = {
 
 const logger = new Logger({ serviceName: 'order-service' })
 
-export const createOrder = async (event: OrderCreateEvent): Promise<Response> => {
+export const handler = async (event: OrderCreateEvent): Promise<Response> => {
+  logger.logEventIfEnabled(event)
   try {
     logger.info('Order is validated')
-    logger.info('Order is created')
+    logger.info('Order is created', { data: event })
     return {
       statusCode: 201,
       body: { message: 'Order created', data: event },

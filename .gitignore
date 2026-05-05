@@ -10,3 +10,10 @@ node_modules
 *.tfstate
 *.tfstate.backup
 crash.log
+
+# Serverless
+.serverless
+
+
+# Files
+.DS*

@@ -1,0 +1,25 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: aogallo
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: order-service
+frameworkVersion: "4"
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
+  # Uncomment to easily set up a custom domain. Read the docs for more details:
+  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
+  # domain: api.example.com
+functions:
+  createOrder:
+    handler: ./src/handlers/createOrder.handler
+    events:
+      - httpApi:
+          path: orders
+          method: post
+  getOrderById:
+    handler: ./src/handlers/getOrderById.handler
+    events:
+      - httpApi:
+          path: orders/{id}
+          method: get
