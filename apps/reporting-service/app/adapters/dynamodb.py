@@ -9,7 +9,7 @@ _region_name = os.environ.get("AWS_REGION", "us-east-1")
 
 _client = boto3.client("dynamodb", region_name=_region_name)
 
-_table = os.environ.get("DYNAMO_TABLE_NAME", "test-order-events")
+_table = os.environ["DYNAMO_TABLE_NAME"]
 
 
 def put_event(event: OrderEvent) -> None:
