@@ -17,3 +17,10 @@ crash.log
 
 # Files
 .DS*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+.env
