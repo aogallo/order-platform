@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -19,4 +19,4 @@ class OrderUpdated(BaseModel):
     status: Literal["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"]
 
 
-OrderEvent = Annotated[Union[OrderCreated, OrderUpdated], ...]
+OrderEvent = Annotated[OrderCreated | OrderUpdated, ...]
