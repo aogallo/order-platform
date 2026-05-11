@@ -3,33 +3,37 @@ on:
   push:
     branches: [main]
 jobs:
-  # ------------------------
-  # INFRA
-  # ------------------------
+  # ========================
+  # DEV
+  # ========================
   infra-dev:
     uses: ./.github/workflows/terraform-common.yml
     with:
       env: dev
       working-directory: infra/environments/dev
       action: apply
-  # ------------------------
-  # BACKEND
-  # ------------------------
+
   backend-dev:
     needs: infra-dev
     uses: ./.github/workflows/backend.yml
     with:
       service: order-service
       env: dev
-      # ------------------------
-      # FRONTEND
-      # ------------------------
+
+  reporting-dev:
+    needs: infra-dev
+    uses: ./.github/workflows/deploy-python-service.yml
+    with:
+      service: reporting-service
+      env: dev
+
   frontend-dev:
-    needs: backend-dev
+    needs: [backend-dev, reporting-dev]
     uses: ./.github/workflows/deploy-frontend.yml
     with:
       app: admin-web
       env: dev
+
   # ========================
   # STAGING
   # ========================
@@ -40,18 +44,28 @@ jobs:
       env: staging
       working-directory: infra/environments/staging
       action: apply
+
   backend-staging:
     needs: infra-staging
     uses: ./.github/workflows/backend.yml
     with:
       service: order-service
       env: staging
+
+  reporting-staging:
+    needs: infra-staging
+    uses: ./.github/workflows/deploy-python-service.yml
+    with:
+      service: reporting-service
+      env: staging
+
   frontend-staging:
-    needs: backend-staging
+    needs: [backend-staging, reporting-staging]
     uses: ./.github/workflows/frontend.yml
     with:
       app: admin-web
       env: staging
+
   # ========================
   # PROD (APPROVAL)
   # ========================
@@ -63,14 +77,23 @@ jobs:
       env: prod
       working-directory: infra/environments/prod
       action: apply
+
   backend-prod:
     needs: infra-prod
     uses: ./.github/workflows/backend.yml
     with:
       service: order-service
       env: prod
+
+  reporting-prod:
+    needs: infra-prod
+    uses: ./.github/workflows/deploy-python-service.yml
+    with:
+      service: reporting-service
+      env: prod
+
   frontend-prod:
-    needs: backend-prod
+    needs: [backend-prod, reporting-prod]
     uses: ./.github/workflows/frontend.yml
     with:
       app: admin-web
