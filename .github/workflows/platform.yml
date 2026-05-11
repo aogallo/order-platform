@@ -22,7 +22,7 @@ jobs:
 
   reporting-dev:
     needs: infra-dev
-    uses: ./.github/workflows/deploy-python-service.yml
+    uses: ./.github/workflows/deploy-reporting-service.yml
     with:
       service: reporting-service
       env: dev
@@ -54,7 +54,7 @@ jobs:
 
   reporting-staging:
     needs: infra-staging
-    uses: ./.github/workflows/deploy-python-service.yml
+    uses: ./.github/workflows/deploy-reporting-service.yml
     with:
       service: reporting-service
       env: staging
@@ -87,7 +87,7 @@ jobs:
 
   reporting-prod:
     needs: infra-prod
-    uses: ./.github/workflows/deploy-python-service.yml
+    uses: ./.github/workflows/deploy-reporting-service.yml
     with:
       service: reporting-service
       env: prod
