@@ -1,4 +1,5 @@
 import { Logger } from '@aws-lambda-powertools/logger'
+import { publishOrderCreated } from '../lib/sqsPublisher'
 
 type OrderCreateEvent = {
   id: string
@@ -18,6 +19,7 @@ export const handler = async (event: OrderCreateEvent): Promise<Response> => {
   try {
     logger.info('Order is validated')
     logger.info('Order is created', { data: event })
+    await publishOrderCreated({ orderId: event.id, total: event.amount })
     return {
       statusCode: 201,
       body: { message: 'Order created', data: event },
