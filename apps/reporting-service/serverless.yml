@@ -1,0 +1,35 @@
+org: aogallo
+service: reporting-service
+frameworkVersion: "4"
+provider:
+  name: aws
+  runtime: python3.12
+  stage: ${opt:stage, 'dev'}
+  environment:
+    DYNAMODB_TABLE: order-events
+    S3_BUCKET: order-events-${self:provider.stage}
+    LOG_LEVEL: INFO
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - sqs:ReceiveMessage
+            - sqs:DeleteMessage
+            - sqs:GetQueueAttributes
+          Resource: arn:aws:sqs:${aws:region}:${aws:accountId}:order-events
+        - Effect: Allow
+          Action: dynamodb:PutItem
+          Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/order-events
+        - Effect: Allow
+          Action: s3:PutObject
+          Resource: arn:aws:s3:::order-events-${self:provider.stage}/*
+functions:
+  sqsConsumer:
+    handler: app.handlers.process_order_event.handler
+    timeout: 30
+    events:
+      - sqs:
+          arn: arn:aws:sqs:${aws:region}:${aws:accountId}:order-events
+          batchSize: 10
+          functionResponseType: ReportBatchItemFailures
