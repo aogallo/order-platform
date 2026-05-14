@@ -1,0 +1,33 @@
+service: tracking-service
+frameworkVersion: "4"
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
+  environment:
+    TRACKING_TABLE: order-platform-tracking-${sls:stage}
+    ORDER_EVENTS_QUEUE_URL: https://sqs.${aws:region}.amazonaws.com/${aws:accountId}/order-events
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:PutItem
+          Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/order-platform-tracking-${sls:stage}
+        - Effect: Allow
+          Action: sqs:ReceiveMessage
+          Resource: arn:aws:sqs:${aws:region}:${aws:accountId}:order-events
+functions:
+  getTracking:
+    handler: ./src/handlers/getTracking.handler
+    events:
+      - httpApi:
+          path: /tracking/{orderId}
+          method: get
+  processOrderEvent:
+    handler: ./src/handlers/processOrderEvent.handler
+    events:
+      - sqs:
+          arn: arn:aws:sqs:${aws:region}:${aws:accountId}:order-events
+          batchSize: 1
