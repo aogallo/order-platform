@@ -9,3 +9,7 @@ output "order_events_table_name" {
 output "order_events_bucket_name" {
   value = module.order_events_s3.bucket_name
 }
+
+output "tracking_table_name" {
+  value = module.tracking_dynamodb.table_name
+}
