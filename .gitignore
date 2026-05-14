@@ -4,6 +4,9 @@
 # NodeJS
 node_modules
 
+# Package build output
+packages/*/dist
+
 
 # Terraform
 .terraform/
