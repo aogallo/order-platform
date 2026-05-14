@@ -27,6 +27,3 @@ __pycache__/
 *.pyo
 
 .env
-
-# Packages
-packages/*/dist
