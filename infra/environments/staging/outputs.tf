@@ -13,3 +13,14 @@ output "order_events_bucket_name" {
 output "tracking_table_name" {
   value = module.tracking_dynamodb.table_name
 }
+
+output "api_gateway_url" {
+  description = "Base URL of the API Gateway"
+  value       = module.api_gateway.api_url
+}
+
+output "api_gateway_id" {
+  description = "ID of the API Gateway"
+  value       = module.api_gateway.api_id
+}
+
