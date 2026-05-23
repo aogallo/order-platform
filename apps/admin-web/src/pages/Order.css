@@ -1,0 +1,88 @@
+.orders {
+  max-width: 960px;
+}
+
+.orders__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.orders__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.orders__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.orders__table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+.orders__table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+.orders__table tr:last-child td {
+  border-bottom: none;
+}
+.orders__status {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.orders__status--PENDING {
+  background: #fef3c7;
+  color: #92400e;
+}
+.orders__status--CONFIRMED {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.orders__status--SHIPPED {
+  background: #e0f2fe;
+  color: #075985;
+}
+.orders__status--DELIVERED {
+  background: #dcfce7;
+  color: #166534;
+}
+.orders__status--CANCELLED {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.orders__empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secondary);
+}
+.orders__error {
+  padding: 1rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.orders__loading {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secondary);
+}

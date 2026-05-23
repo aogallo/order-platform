@@ -4,6 +4,7 @@ import type { PropsWithChildren } from 'react'
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const { user, loading } = useAuth()
+
   if (loading) {
     return <div>Loading...</div>
   }
