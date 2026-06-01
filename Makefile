@@ -10,14 +10,7 @@ local-up:
 	@echo "✅ LocalStack ready"
 
 local-deploy:
-	@./scripts/deploy-all.sh
-	@tflocal -chdir=infra/environments/dev init
-	@tflocal -chdir=infra/environments/dev apply -auto-approve \
-		-var="project_name=order-platform" \
-		-var="env=local" \
-		-var="region=us-east-1" \
-		-var="tags={}"
-	@./scripts/bootstrap.sh
+	@./scripts/local-dev.sh
 
 local-down:
 	@docker compose -f docker/docker-compose.yml down -v

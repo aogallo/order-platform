@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "serverless-localstack": "^1.4.0",
     "turbo": "^2.9.6"
   },
   "packageManager": "pnpm@10.10.0",

@@ -1,3 +1,4 @@
+name: LocalStack and Mailhog
 services:
   localstack:
     image: localstack/localstack:4
@@ -5,7 +6,7 @@ services:
       - "4566:4566"
       - "4510-4559:4510-4559"
     environment:
-      SERVICES: dynamodb,sqs,s3,cognito,ses,lambda,apigateway,sesv2
+      SERVICES: dynamodb,sqs,s3,cognito,ses,lambda,apigateway,sesv2,cloudformation,ssm,logs,iam,cognito-idp
       AWS_DEFAULT_REGION: us-east-1
       AWS_ACCESS_KEY_ID: test
       AWS_SECRET_ACCESS_KEY: test
