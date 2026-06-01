@@ -12,5 +12,8 @@ provider "aws" {
     apigateway = "http://localhost:4566"
     dynamodb   = "http://localhost:4566"
     sqs        = "http://localhost:4566"
+    ses        = "http://localhost:4566"
+    sesv2      = "http://localhost:4566"
+    cognitoidp = "http://localhost:4566"
   }
 }
