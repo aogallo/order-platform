@@ -1,0 +1,45 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_lambda_function" "create_order" {
+  function_name = "order-service-${var.env}-createOrder"
+}
+
+data "aws_lambda_function" "get_order" {
+  function_name = "order-service-${var.env}-getOrderById"
+}
+
+data "aws_lambda_function" "get_tracking" {
+  function_name = "tracking-service-${var.env}-getTracking"
+}
+
+module "api_gateway" {
+  source       = "../../modules/api-gateway"
+  project_name = var.project_name
+  env          = var.env
+
+  cognito_user_pool_arn = null
+
+  routes = {
+    create-order = {
+      path                 = "/orders"
+      method               = "POST"
+      lambda_function_name = data.aws_lambda_function.create_order.function_name
+      lambda_invoke_arn    = data.aws_lambda_function.create_order.invoke_arn
+      auth_required        = false
+    }
+    get-order = {
+      path                 = "/orders/{id}"
+      method               = "GET"
+      lambda_function_name = data.aws_lambda_function.get_order.function_name
+      lambda_invoke_arn    = data.aws_lambda_function.get_order.invoke_arn
+      auth_required        = false
+    }
+    get-tracking = {
+      path                 = "/tracking/{orderId}"
+      method               = "GET"
+      lambda_function_name = data.aws_lambda_function.get_tracking.function_name
+      lambda_invoke_arn    = data.aws_lambda_function.get_tracking.invoke_arn
+      auth_required        = false
+    }
+  }
+}
