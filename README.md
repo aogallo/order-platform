@@ -4,26 +4,32 @@ Cloud-native, event-driven, serverless order management platform. Built with pol
 
 ## Architecture
 
-```
-Frontend                          API Layer                    Backend (Sync)          Async Processing
-┌─────────────┐                  ┌──────────────┐            ┌────────────────┐       ┌──────────────────────┐
-│  admin-web   │                  │              │            │ order-service  │       │  reporting-service   │
-│  (React +    │──────┐           │  API Gateway  │──────────▶│ (Node.js Lambda)│──────▶│  (Python Lambda)     │
-│   React Query)│     │           │              │  POST/GET  │                │       │                      │
-└─────────────┘     │           │              │            │ Create/Query   │       │  Analytics + S3      │
-                    │           │  + Cognito   │            │ orders         │       └──────────────────────┘
-┌─────────────┐     │           │  Authorizer  │            └────────────────┘       ┌──────────────────────┐
-│  public-web  │     └──────────▶│              │            ┌────────────────┐       │  notification-service│
-│  (React)    │                 │              │            │ tracking-service│──────▶│  (Lambda)            │
-└─────────────┘                 └──────────────┘            │ (Node.js Lambda)│       │                      │
-                                                            │                │       │  Email / SMS         │
-                                                            │ GET /tracking  │       └──────────────────────┘
-                                                            └────────────────┘
-                                                                    │
-                                                                    ▼
-                                                              ┌──────────┐
-                                                              │ DynamoDB │
-                                                              └──────────┘
+```mermaid
+flowchart LR
+  user[Admin / Customer] --> web[admin-web<br/>React 19 + Vite]
+  web --> api[API Gateway HTTP API<br/>Cognito authorizer]
+
+  api --> order[order-service<br/>Node 20 Lambda]
+  api --> tracking[tracking-service<br/>Node 20 Lambda]
+  api --> reporting[reporting-service<br/>Python 3.12 Lambda]
+
+  order --> dynamodb[(DynamoDB)]
+  tracking --> dynamodb
+  reporting --> dynamodb
+
+  order --> eventbridge[EventBridge]
+  eventbridge --> tracking
+  eventbridge --> notification_queue[SQS notification queue]
+  notification_queue --> notification[notification-service<br/>Node 20 Lambda]
+  notification --> ses[SES]
+
+  reporting --> s3[(S3 reports)]
+
+  shared_types[packages/shared-types] -. shared contracts .-> web
+  shared_types -. shared contracts .-> order
+  shared_types -. shared contracts .-> tracking
+  auth_lib[packages/auth-lib] -. JWT verification .-> order
+  auth_lib -. JWT verification .-> tracking
 ```
 
 ## Stack
