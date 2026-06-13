@@ -30,11 +30,3 @@ variable "cors_allowed_origins" {
   description = "Allowed origins for CORS"
 }
 
-variable "throttle_settings" {
-  type = object({
-    burst_limit = optional(number, 100)
-    rate_limit  = optional(number, 50)
-  })
-  default     = {}
-  description = "Throttling settings for the API stage"
-}

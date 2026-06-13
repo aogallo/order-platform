@@ -1,5 +1,7 @@
 service: notification-service
 frameworkVersion: "4"
+plugins:
+  - serverless-localstack
 provider:
   name: aws
   runtime: nodejs20.x
@@ -18,10 +20,19 @@ provider:
             - ses:SendEmail
             - ses:SendRawEmail
           Resource: '*'
+custom:
+  localstack:
+    stages:
+      - local
+    endpointFile: ${env:LOCALSTACK_ENDPOINT_FILE, './localstack-endpoints.json'}
+    host: ${env:LOCALSTACK_HOST, 'http://localhost'}
+    lambda:
+      mountCode: false
+      debug: true
 functions:
   processOrderNotification:
     handler: ./src/handlers/processOrderNotification.handler
     events:
       - sqs:
-          arn: arn:aws:sqs:${aws.region}:${aws:accountId}:order-notifications
+          arn: arn:aws:sqs:${aws:region}:${aws:accountId}:order-notifications
           batchSize: 1

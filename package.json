@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "serverless-localstack": "^1.4.0",
     "turbo": "^2.9.6"
   },
   "packageManager": "pnpm@10.10.0",
@@ -32,6 +33,12 @@
     "tf:init:dev": "terraform -chdir=infra/environments/dev init",
     "tf:validate:dev": "terraform -chdir=infra/environments/dev validate",
     "tf:plan:dev": "terraform -chdir=infra/environments/dev plan ",
-    "tf:apply:dev": "terraform -chdir=infra/environments/dev apply"
+    "tf:apply:dev": "terraform -chdir=infra/environments/dev apply",
+    "local:up": "make local-up",
+    "local:deploy": "make local-deploy",
+    "local:down": "make local-down",
+    "local:status": "make local-status",
+    "local:logs": "make local-logs",
+    "local:rebuild": "make local-rebuild"
   }
 }

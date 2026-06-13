@@ -1,6 +1,8 @@
 org: aogallo
 service: reporting-service
 frameworkVersion: "4"
+plugins:
+  - serverless-localstack
 provider:
   name: aws
   runtime: python3.12
@@ -24,6 +26,15 @@ provider:
         - Effect: Allow
           Action: s3:PutObject
           Resource: arn:aws:s3:::order-events-${self:provider.stage}/*
+custom:
+  localstack:
+    stages:
+      - local
+    endpointFile: ${env:LOCALSTACK_ENDPOINT_FILE, './localstack-endpoints.json'}
+    host: ${env:LOCALSTACK_HOST, 'http://localhost'}
+    lambda:
+      mountCode: false
+      debug: true
 functions:
   sqsConsumer:
     handler: app.handlers.process_order_event.handler

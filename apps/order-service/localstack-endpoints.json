@@ -1,0 +1,10 @@
+{
+  "S3": "http://localhost:4566",
+  "DynamoDB": "http://localhost:4566",
+  "SQS": "http://localhost:4566",
+  "CognitoIdentityServiceProvider": "http://localhost:4566",
+  "SES": "http://localhost:4566",
+  "SESV2": "http://localhost:4566",
+  "Lambda": "http://localhost:4566",
+  "ApiGateway": "http://localhost:4566"
+}
