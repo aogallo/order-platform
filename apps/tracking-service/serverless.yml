@@ -32,10 +32,6 @@ custom:
 functions:
   getTracking:
     handler: ./src/handlers/getTracking.handler
-    events:
-      - httpApi:
-          path: /tracking/{orderId}
-          method: get
   processOrderEvent:
     handler: ./src/handlers/processOrderEvent.handler
     events:
