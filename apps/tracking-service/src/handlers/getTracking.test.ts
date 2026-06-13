@@ -14,7 +14,7 @@ const { handler } = await import('./getTracking')
 
 function makeEvent(orderId?: string) {
   return {
-    pathParameters: { id: orderId },
+    pathParameters: { orderId: orderId },
   } as any
 }
 
