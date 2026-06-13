@@ -12,22 +12,20 @@ export const Layout = ({ children }: LayoutProps) => {
         <h1 className="sidebar__title">Admin Panel</h1>
         <nav className="sidebar__nav">
           <NavLink
-            to="/"
+            to="/admin"
             end
             className={({ isActive }) => `sidebar__link${isActive ? ' sidebar__link--active' : ''}`}
           >
             Dashboard
           </NavLink>
           <NavLink
-            to="/orders"
-            end
+            to="/admin/orders"
             className={({ isActive }) => `sidebar__link${isActive ? ' sidebar__link--active' : ''}`}
           >
             Orders
           </NavLink>
           <NavLink
-            to="/users"
-            end
+            to="/admin/users"
             className={({ isActive }) => `sidebar__link${isActive ? ' sidebar__link--active' : ''}`}
           >
             Users
