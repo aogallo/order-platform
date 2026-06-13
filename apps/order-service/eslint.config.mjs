@@ -1,7 +1,7 @@
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import prettier from "eslint-config-prettier";
-import prettierPlugin from "eslint-plugin-prettier";
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import prettier from 'eslint-config-prettier'
+import prettierPlugin from 'eslint-plugin-prettier'
 
 export default tseslint.config(
   js.configs.recommended,
@@ -10,13 +10,13 @@ export default tseslint.config(
   {
     plugins: { prettier: prettierPlugin },
     rules: {
-      "prettier/prettier": "error",
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
   {
-    ignores: ["node_modules", "dist", "coverage"],
-  }
-);
+    ignores: ['node_modules', 'dist', 'coverage'],
+  },
+)
