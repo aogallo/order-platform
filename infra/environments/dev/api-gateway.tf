@@ -24,21 +24,21 @@ module "api_gateway" {
       path                 = "/orders"
       method               = "POST"
       lambda_function_name = data.aws_lambda_function.create_order.function_name
-      lambda_invoke_arn    = data.aws_lambda_function.create_order.arn
+      lambda_invoke_arn    = data.aws_lambda_function.create_order.invoke_arn
       auth_required        = true
     }
     get-order = {
       path                 = "/orders/{id}"
       method               = "GET"
       lambda_function_name = data.aws_lambda_function.get_order.function_name
-      lambda_invoke_arn    = data.aws_lambda_function.get_order.arn
+      lambda_invoke_arn    = data.aws_lambda_function.get_order.invoke_arn
       auth_required        = true
     }
     get-tracking = {
       path                 = "/tracking/{orderId}"
       method               = "GET"
       lambda_function_name = data.aws_lambda_function.get_tracking.function_name
-      lambda_invoke_arn    = data.aws_lambda_function.get_tracking.arn
+      lambda_invoke_arn    = data.aws_lambda_function.get_tracking.invoke_arn
       auth_required        = true
     }
   }

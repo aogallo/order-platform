@@ -5,7 +5,7 @@ output "api_id" {
 
 output "api_url" {
   description = "Base URL of the API Gateway stage"
-  value       = "${aws_api_gateway_deployment.deploy.invoke_url}/${aws_api_gateway_stage.stage.stage_name}"
+  value       = aws_api_gateway_stage.stage.invoke_url
 }
 
 output "execution_arn" {
