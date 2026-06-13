@@ -28,20 +28,20 @@ Frontend                          API Layer                    Backend (Sync)   
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Admin Frontend** | React + Vite + React Query + TypeScript |
-| **Public Frontend** | React + Vite + TypeScript |
-| **API Gateway** | Amazon API Gateway + Cognito |
-| **Sync Services** | Node.js + TypeScript (AWS Lambda) |
-| **Async Services** | Python 3.12 (AWS Lambda) |
-| **Messaging** | Amazon SQS + EventBridge |
-| **Database** | Amazon DynamoDB |
-| **Storage** | Amazon S3 |
-| **Auth** | Amazon Cognito |
-| **Infrastructure** | Terraform + Serverless Framework |
-| **Monorepo** | pnpm workspaces + Turbo |
-| **CI/CD** | GitHub Actions |
+| Layer               | Technology                              |
+| ------------------- | --------------------------------------- |
+| **Admin Frontend**  | React + Vite + React Query + TypeScript |
+| **Public Frontend** | React + Vite + TypeScript               |
+| **API Gateway**     | Amazon API Gateway + Cognito            |
+| **Sync Services**   | Node.js + TypeScript (AWS Lambda)       |
+| **Async Services**  | Python 3.12 (AWS Lambda)                |
+| **Messaging**       | Amazon SQS + EventBridge                |
+| **Database**        | Amazon DynamoDB                         |
+| **Storage**         | Amazon S3                               |
+| **Auth**            | Amazon Cognito                          |
+| **Infrastructure**  | Terraform + Serverless Framework        |
+| **Monorepo**        | pnpm workspaces + Turbo                 |
+| **CI/CD**           | GitHub Actions                          |
 
 ## Repository Structure
 
@@ -85,45 +85,45 @@ order-platform/
 
 ### 🔵 Sync (Node.js + TypeScript)
 
-| Service | Endpoints | Description |
-|---------|-----------|-------------|
-| **order-service** | `POST /orders`, `GET /orders/{id}` | Core business — create and query orders, emits events |
-| **tracking-service** | `GET /tracking/{orderId}` | Status timeline per order |
+| Service              | Endpoints                          | Description                                           |
+| -------------------- | ---------------------------------- | ----------------------------------------------------- |
+| **order-service**    | `POST /orders`, `GET /orders/{id}` | Core business — create and query orders, emits events |
+| **tracking-service** | `GET /tracking/{orderId}`          | Status timeline per order                             |
 
 ### 🟢 Async (Python / Node.js)
 
-| Service | Runtime | Description |
-|---------|---------|-------------|
-| **reporting-service** | Python 3.12 | Consumes events, persists to DynamoDB and S3 for analytics |
-| **notification-service** | Node.js | Sends emails/SMS on order status changes |
+| Service                  | Runtime     | Description                                                |
+| ------------------------ | ----------- | ---------------------------------------------------------- |
+| **reporting-service**    | Python 3.12 | Consumes events, persists to DynamoDB and S3 for analytics |
+| **notification-service** | Node.js     | Sends emails/SMS on order status changes                   |
 
 ### 🟣 Frontend (React + TypeScript)
 
-| App | Stack | Users |
-|-----|-------|-------|
-| **admin-web** | React + Vite + React Query | Admins, operators |
-| **public-web** | React + Vite | Customers |
+| App            | Stack                      | Users             |
+| -------------- | -------------------------- | ----------------- |
+| **admin-web**  | React + Vite + React Query | Admins, operators |
+| **public-web** | React + Vite               | Customers         |
 
 ## Shared Packages
 
-| Package | Description |
-|---------|-------------|
+| Package        | Description                                              |
+| -------------- | -------------------------------------------------------- |
 | `event-schema` | JSON Schema contracts (`order.created`, `order.updated`) |
-| `shared-types` | Shared TypeScript interfaces (Order, User, Tracking) |
-| `shared-utils` | Helpers: validation, formatting, constants |
-| `auth-lib` | Cognito helpers: verify token, authorize by group |
+| `shared-types` | Shared TypeScript interfaces (Order, User, Tracking)     |
+| `shared-utils` | Helpers: validation, formatting, constants               |
+| `auth-lib`     | Cognito helpers: verify token, authorize by group        |
 
 ## AWS Infrastructure
 
-| Resource | Purpose |
-|----------|---------|
-| **Cognito** | Centralized auth with groups (admin, operator, viewer) |
-| **API Gateway** | HTTP entry point with rate limiting and authorizer |
-| **Lambda** | Serverless compute for all services |
-| **DynamoDB** | Operational database (orders, tracking, events) |
-| **SQS** | Async communication between services |
-| **S3** | Analytics storage (reporting) and frontend hosting |
-| **SNS/SES** | Notifications |
+| Resource        | Purpose                                                |
+| --------------- | ------------------------------------------------------ |
+| **Cognito**     | Centralized auth with groups (admin, operator, viewer) |
+| **API Gateway** | HTTP entry point with rate limiting and authorizer     |
+| **Lambda**      | Serverless compute for all services                    |
+| **DynamoDB**    | Operational database (orders, tracking, events)        |
+| **SQS**         | Async communication between services                   |
+| **S3**          | Analytics storage (reporting) and frontend hosting     |
+| **SNS/SES**     | Notifications                                          |
 
 ## Design Philosophy
 
@@ -179,6 +179,7 @@ main ──▶ DEV ──▶ STAGING ──▶ PROD (manual approval)
 ```
 
 Each stage runs:
+
 1. Terraform apply (infrastructure)
 2. Serverless deploy (backend services)
 3. S3 sync + CloudFront (frontends)
@@ -187,31 +188,31 @@ Each stage runs:
 
 Progress is tracked via [GitHub Issues](https://github.com/aogallo/order-platform/issues) organized by phases:
 
-| Phase | Description | Issues |
-|-------|-------------|--------|
-| **1** | Shared Packages (shared-types, shared-utils, auth-lib) | [#18](https://github.com/aogallo/order-platform/issues/18) [#19](https://github.com/aogallo/order-platform/issues/19) [#20](https://github.com/aogallo/order-platform/issues/20) |
-| **2** | tracking-service (scaffold, handler, event consumer) | [#21](https://github.com/aogallo/order-platform/issues/21) [#22](https://github.com/aogallo/order-platform/issues/22) [#23](https://github.com/aogallo/order-platform/issues/23) |
-| **3** | notification-service (scaffold, consumer, SES adapter) | [#24](https://github.com/aogallo/order-platform/issues/24) [#25](https://github.com/aogallo/order-platform/issues/25) [#26](https://github.com/aogallo/order-platform/issues/26) |
-| **4** | API Gateway (Terraform module + Cognito authorizer) | [#27](https://github.com/aogallo/order-platform/issues/27) |
-| **5** | admin-web (scaffold, auth, orders, dashboard, users) | [#28](https://github.com/aogallo/order-platform/issues/28) [#29](https://github.com/aogallo/order-platform/issues/29) [#30](https://github.com/aogallo/order-platform/issues/30) [#31](https://github.com/aogallo/order-platform/issues/31) [#32](https://github.com/aogallo/order-platform/issues/32) |
-| **6** | public-web (scaffold, auth, order creation, tracking) | [#33](https://github.com/aogallo/order-platform/issues/33) [#34](https://github.com/aogallo/order-platform/issues/34) [#35](https://github.com/aogallo/order-platform/issues/35) [#36](https://github.com/aogallo/order-platform/issues/36) |
+| Phase | Description                                              | Issues                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** | Shared Packages (shared-types, shared-utils, auth-lib)   | [#18](https://github.com/aogallo/order-platform/issues/18) [#19](https://github.com/aogallo/order-platform/issues/19) [#20](https://github.com/aogallo/order-platform/issues/20)                                                                                                                                                                                                                                                                                                        |
+| **2** | tracking-service (scaffold, handler, event consumer)     | [#21](https://github.com/aogallo/order-platform/issues/21) [#22](https://github.com/aogallo/order-platform/issues/22) [#23](https://github.com/aogallo/order-platform/issues/23)                                                                                                                                                                                                                                                                                                        |
+| **3** | notification-service (scaffold, consumer, SES adapter)   | [#24](https://github.com/aogallo/order-platform/issues/24) [#25](https://github.com/aogallo/order-platform/issues/25) [#26](https://github.com/aogallo/order-platform/issues/26)                                                                                                                                                                                                                                                                                                        |
+| **4** | API Gateway (Terraform module + Cognito authorizer)      | [#27](https://github.com/aogallo/order-platform/issues/27)                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| **5** | admin-web (scaffold, auth, orders, dashboard, users)     | [#28](https://github.com/aogallo/order-platform/issues/28) [#29](https://github.com/aogallo/order-platform/issues/29) [#30](https://github.com/aogallo/order-platform/issues/30) [#31](https://github.com/aogallo/order-platform/issues/31) [#32](https://github.com/aogallo/order-platform/issues/32)                                                                                                                                                                                  |
+| **6** | public-web (scaffold, auth, order creation, tracking)    | [#33](https://github.com/aogallo/order-platform/issues/33) [#34](https://github.com/aogallo/order-platform/issues/34) [#35](https://github.com/aogallo/order-platform/issues/35) [#36](https://github.com/aogallo/order-platform/issues/36)                                                                                                                                                                                                                                             |
 | **7** | Infra + CI/CD (staging, prod, modules, pipelines, tests) | [#37](https://github.com/aogallo/order-platform/issues/37) [#38](https://github.com/aogallo/order-platform/issues/38) [#39](https://github.com/aogallo/order-platform/issues/39) [#40](https://github.com/aogallo/order-platform/issues/40) [#41](https://github.com/aogallo/order-platform/issues/41) [#42](https://github.com/aogallo/order-platform/issues/42) [#43](https://github.com/aogallo/order-platform/issues/43) [#44](https://github.com/aogallo/order-platform/issues/44) |
 
 ### Existing Issues (previous)
 
-| Issue | Description | Status |
-|-------|-------------|--------|
-| [#2](https://github.com/aogallo/order-platform/issues/2) | reporting-service: event-driven pipeline | 🔄 Open |
-| [#3](https://github.com/aogallo/order-platform/issues/3) | event-schema: JSON Schema contracts | ✅ Closed |
-| [#4](https://github.com/aogallo/order-platform/issues/4) | reporting-service: Python tooling | ✅ Closed |
-| [#5](https://github.com/aogallo/order-platform/issues/5) | reporting-service: domain layer | ✅ Closed |
-| [#6](https://github.com/aogallo/order-platform/issues/6) | infra: SQS, DynamoDB, S3, IAM | ✅ Closed |
-| [#7](https://github.com/aogallo/order-platform/issues/7) | reporting-service: adapters | ✅ Closed |
-| [#8](https://github.com/aogallo/order-platform/issues/8) | reporting-service: use case | ✅ Closed |
-| [#9](https://github.com/aogallo/order-platform/issues/9) | reporting-service: Lambda handler | 🔄 Open |
-| [#10](https://github.com/aogallo/order-platform/issues/10) | order-service: publish to SQS | 🔄 Open |
-| [#11](https://github.com/aogallo/order-platform/issues/11) | reporting-service: Serverless config | 🔄 Open |
-| [#12](https://github.com/aogallo/order-platform/issues/12) | reporting-service: cleanup + README | 🔄 Open |
+| Issue                                                      | Description                              | Status    |
+| ---------------------------------------------------------- | ---------------------------------------- | --------- |
+| [#2](https://github.com/aogallo/order-platform/issues/2)   | reporting-service: event-driven pipeline | 🔄 Open   |
+| [#3](https://github.com/aogallo/order-platform/issues/3)   | event-schema: JSON Schema contracts      | ✅ Closed |
+| [#4](https://github.com/aogallo/order-platform/issues/4)   | reporting-service: Python tooling        | ✅ Closed |
+| [#5](https://github.com/aogallo/order-platform/issues/5)   | reporting-service: domain layer          | ✅ Closed |
+| [#6](https://github.com/aogallo/order-platform/issues/6)   | infra: SQS, DynamoDB, S3, IAM            | ✅ Closed |
+| [#7](https://github.com/aogallo/order-platform/issues/7)   | reporting-service: adapters              | ✅ Closed |
+| [#8](https://github.com/aogallo/order-platform/issues/8)   | reporting-service: use case              | ✅ Closed |
+| [#9](https://github.com/aogallo/order-platform/issues/9)   | reporting-service: Lambda handler        | 🔄 Open   |
+| [#10](https://github.com/aogallo/order-platform/issues/10) | order-service: publish to SQS            | 🔄 Open   |
+| [#11](https://github.com/aogallo/order-platform/issues/11) | reporting-service: Serverless config     | 🔄 Open   |
+| [#12](https://github.com/aogallo/order-platform/issues/12) | reporting-service: cleanup + README      | 🔄 Open   |
 
 ## License
 
