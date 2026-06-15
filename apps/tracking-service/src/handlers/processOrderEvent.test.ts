@@ -79,7 +79,9 @@ describe('processOrderEvent', () => {
     const event = {
       Records: [
         { body: JSON.stringify({ type: 'order.created', orderId: 'order-1' }) },
-        { body: JSON.stringify({ type: 'order.updated', orderId: 'order-2', status: 'DELIVERED' }) },
+        {
+          body: JSON.stringify({ type: 'order.updated', orderId: 'order-2', status: 'DELIVERED' }),
+        },
       ],
     } as any
 
