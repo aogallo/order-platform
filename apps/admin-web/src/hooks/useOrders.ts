@@ -1,6 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import api from '../lib/axiosClient'
-import type { Order, GetOrderResponse } from '@order-platform/shared-types'
+import type {
+  Order,
+  GetOrderResponse,
+  CreateOrderResponse,
+  CreateOrderRequest,
+} from '@order-platform/shared-types'
+import { toast } from 'sonner'
 const MOCK_ORDERS: Order[] = [
   {
     id: 'ord-001',
@@ -62,5 +68,18 @@ export function useOrder(orderId: string) {
     queryKey: ['order', orderId],
     queryFn: () => api.get(`/orders/${orderId}`).then((r) => r.data),
     enabled: !!orderId,
+  })
+}
+
+export function useCreateOrder() {
+  return useMutation({
+    mutationFn: (data: CreateOrderRequest) =>
+      api.post<CreateOrderResponse>('/orders', data).then((r) => r.data),
+    onSuccess: () => {
+      toast.success('Order created successfully!')
+    },
+    onError: () => {
+      toast.error('Failed to create order. Please try again.')
+    },
   })
 }
