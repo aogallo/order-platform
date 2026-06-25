@@ -14,11 +14,11 @@
 
 .users__table {
   width: 100%;
-  border-collapse: collapase;
+  border-collapse: collapse;
   background: var(--color-surface);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-elevated);
 }
 
 .users__table th {
@@ -53,16 +53,16 @@
 }
 
 .users__role--admin {
-  background: #fef3c7;
-  color: #92400e;
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .users__role--operator {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--color-primary-badge-bg);
+  color: var(--color-primary-badge-text);
 }
 
 .users__role--viewer {
-  background: #e0f2fe;
-  color: #075985;
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
 }

@@ -22,6 +22,7 @@
 
 .public__nav {
   display: flex;
+  align-items: center;
   gap: 1.5rem;
 }
 
@@ -42,4 +43,8 @@
   max-width: 960px;
   margin: 0 auto;
   width: 100%;
+}
+
+.public__theme-toggle {
+  padding: 0.45rem 0.6rem;
 }
