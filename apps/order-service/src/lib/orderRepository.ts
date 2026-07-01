@@ -1,4 +1,9 @@
-import { DynamoDBClient, GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb'
+import {
+  DynamoDBClient,
+  GetItemCommand,
+  PutItemCommand,
+  ScanCommand,
+} from '@aws-sdk/client-dynamodb'
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb'
 import type { Order } from '@order-platform/shared-types'
 
@@ -50,5 +55,17 @@ export class OrderRepository {
     const item = unmarshall(result.Item)
 
     return toOrder(item)
+  }
+
+  async list(): Promise<Order[]> {
+    const scanCommand = new ScanCommand({
+      TableName: this.tableName,
+      FilterExpression: 'sk = :metadata',
+      ExpressionAttributeValues: marshall({ ':metadata': 'metadata' }),
+    })
+
+    const result = await this.client.send(scanCommand)
+
+    return (result.Items ?? []).map((item) => toOrder(unmarshall(item)))
   }
 }

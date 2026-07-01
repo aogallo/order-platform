@@ -4,6 +4,10 @@ data "aws_lambda_function" "create_order" {
   function_name = "order-service-${var.env}-createOrder"
 }
 
+data "aws_lambda_function" "list_orders" {
+  function_name = "order-service-${var.env}-listOrders"
+}
+
 data "aws_lambda_function" "get_order" {
   function_name = "order-service-${var.env}-getOrderById"
 }
@@ -25,6 +29,13 @@ module "api_gateway" {
       method               = "POST"
       lambda_function_name = data.aws_lambda_function.create_order.function_name
       lambda_invoke_arn    = data.aws_lambda_function.create_order.invoke_arn
+      auth_required        = true
+    }
+    list-orders = {
+      path                 = "/orders"
+      method               = "GET"
+      lambda_function_name = data.aws_lambda_function.list_orders.function_name
+      lambda_invoke_arn    = data.aws_lambda_function.list_orders.invoke_arn
       auth_required        = true
     }
     get-order = {

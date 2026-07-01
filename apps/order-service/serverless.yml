@@ -2,7 +2,7 @@
 org: aogallo
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: order-service
-frameworkVersion: "4"
+frameworkVersion: '4'
 plugins:
   - serverless-localstack
 provider:
@@ -25,6 +25,7 @@ provider:
           Action:
             - dynamodb:PutItem
             - dynamodb:GetItem
+            - dynamodb:Scan
           Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/order-platform-order-events-${sls:stage}
 custom:
   localstack:
@@ -40,3 +41,5 @@ functions:
     handler: ./src/handlers/createOrder.handler
   getOrderById:
     handler: ./src/handlers/getOrderById.handler
+  listOrders:
+    handler: ./src/handlers/listOrders.handler

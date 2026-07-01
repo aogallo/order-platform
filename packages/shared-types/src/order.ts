@@ -1,9 +1,4 @@
-export type OrderStatus =
-  | 'PENDING'
-  | 'CONFIRMED'
-  | 'SHIPPED'
-  | 'DELIVERED'
-  | 'CANCELLED'
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
 
 export interface Order {
   id: string
@@ -20,13 +15,14 @@ export interface CreateOrderRequest {
 }
 
 export interface CreateOrderResponse {
-  id: string
-  amount: number
-  item: string
-  status: OrderStatus
-  createdAt: string
+  message: string
+  data: Order
 }
 
 export interface GetOrderResponse {
   order: Order
+}
+
+export interface ListOrdersResponse {
+  orders: Order[]
 }

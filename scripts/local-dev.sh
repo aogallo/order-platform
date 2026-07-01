@@ -33,6 +33,7 @@ export AWS_PAGER=""
 
 # Step 3.5: Pre-create SQS queues for Serverless event source mappings
 echo "--- Step 3.5: Pre-creating SQS queues ---"
+aws sqs create-queue --queue-name order-platform-order-events-local --endpoint-url "$AWS_ENDPOINT_URL" --region "$AWS_DEFAULT_REGION" 2>/dev/null || true
 aws sqs create-queue --queue-name order-events --endpoint-url "$AWS_ENDPOINT_URL" --region "$AWS_DEFAULT_REGION" 2>/dev/null || true
 aws sqs create-queue --queue-name order-notifications --endpoint-url "$AWS_ENDPOINT_URL" --region "$AWS_DEFAULT_REGION" 2>/dev/null || true
 

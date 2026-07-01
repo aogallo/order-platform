@@ -12,8 +12,10 @@ vi.spyOn(DynamoDBClient.prototype, 'send').mockImplementation(mockSend)
 
 const { handler } = await import('./processOrderEvent')
 
-function makeSqsEvent(body: unknown) {
-  return { Records: [{ body: JSON.stringify(body) }] } as any
+type ProcessOrderEventInput = Parameters<typeof handler>[0]
+
+function makeSqsEvent(body: unknown): ProcessOrderEventInput {
+  return { Records: [{ body: JSON.stringify(body) }] }
 }
 
 describe('processOrderEvent', () => {
@@ -66,7 +68,7 @@ describe('processOrderEvent', () => {
   })
 
   it('handles malformed JSON gracefully', async () => {
-    const event = { Records: [{ body: 'not-json' }] } as any
+    const event: ProcessOrderEventInput = { Records: [{ body: 'not-json' }] }
     const result = await handler(event)
 
     expect(result.statusCode).toBe(StatusCodes.OK)
@@ -76,14 +78,14 @@ describe('processOrderEvent', () => {
   it('processes multiple records in a single event', async () => {
     mockSend.mockResolvedValue({})
 
-    const event = {
+    const event: ProcessOrderEventInput = {
       Records: [
         { body: JSON.stringify({ type: 'order.created', orderId: 'order-1' }) },
         {
           body: JSON.stringify({ type: 'order.updated', orderId: 'order-2', status: 'DELIVERED' }),
         },
       ],
-    } as any
+    }
 
     const result = await handler(event)
 

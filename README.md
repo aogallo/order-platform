@@ -91,10 +91,10 @@ order-platform/
 
 ### 🔵 Sync (Node.js + TypeScript)
 
-| Service              | Endpoints                          | Description                                           |
-| -------------------- | ---------------------------------- | ----------------------------------------------------- |
-| **order-service**    | `POST /orders`, `GET /orders/{id}` | Core business — create and query orders, emits events |
-| **tracking-service** | `GET /tracking/{orderId}`          | Status timeline per order                             |
+| Service              | Endpoints                                         | Description                                           |
+| -------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| **order-service**    | `POST /orders`, `GET /orders`, `GET /orders/{id}` | Core business — create and query orders, emits events |
+| **tracking-service** | `GET /tracking/{orderId}`                         | Status timeline per order                             |
 
 ### 🟢 Async (Python / Node.js)
 
@@ -141,23 +141,38 @@ order-platform/
 
 ## Local Development
 
+Use the local deploy script for the full LocalStack flow. It deploys Lambda
+services first, then applies Terraform. The order matters because Terraform
+resolves API Gateway integrations from Lambda functions that Serverless creates.
+
 ```bash
 # Install dependencies
 pnpm install
 
-# Start LocalStack (local AWS infra)
-docker compose -f docker/docker-compose.yml up -d
+# Start LocalStack, deploy Serverless services, then apply Terraform
+pnpm local:deploy
+```
 
-# Deploy infra to LocalStack
-pnpm run tf:init:dev
-pnpm run tf:apply:dev
+For lower-level debugging, run the same sequence manually:
 
-# Develop individual services
-cd packages/shared-types && pnpm run build
-cd apps/order-service && pnpm run dev
+```bash
+# Start LocalStack and MailHog
+pnpm local:up
 
-# Or with Turbo (all services)
-turbo run dev
+# Deploy all Serverless services and apply local Terraform
+./scripts/local-dev.sh
+```
+
+Local Terraform commands should use `tflocal` or the wrapper script above. Plain
+`terraform` targets real AWS unless the LocalStack provider override is active.
+
+```bash
+# Validate Terraform syntax without applying resources
+terraform -chdir=infra/environments/local validate
+
+# Plan/apply against LocalStack only when LocalStack is running
+tflocal -chdir=infra/environments/local plan
+tflocal -chdir=infra/environments/local apply
 ```
 
 ### Prerequisites
@@ -178,17 +193,21 @@ The pipeline auto-deploys across 3 environments on push to `main`:
 ```
 main ──▶ DEV ──▶ STAGING ──▶ PROD (manual approval)
          │         │             │
-         ├─ infra  ├─ infra      ├─ infra
          ├─ backend├─ backend    ├─ backend
+         ├─ infra  ├─ infra      ├─ infra
          ├─ frontend             ├─ frontend
          └─ reporting            └─ reporting
 ```
 
 Each stage runs:
 
-1. Terraform apply (infrastructure)
-2. Serverless deploy (backend services)
+1. Serverless deploy (backend services)
+2. Terraform apply (API Gateway and shared infrastructure)
 3. S3 sync + CloudFront (frontends)
+
+Terraform depends on Lambda names/ARNs created by Serverless for API Gateway
+integration, so backend deployment must happen before Terraform for environments
+that wire API Gateway to Lambda data sources.
 
 ## Project Tracking
 

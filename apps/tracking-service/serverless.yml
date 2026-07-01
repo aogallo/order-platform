@@ -1,5 +1,5 @@
 service: tracking-service
-frameworkVersion: "4"
+frameworkVersion: '4'
 plugins:
   - serverless-localstack
 provider:
@@ -8,7 +8,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   environment:
     TRACKING_TABLE: order-platform-tracking-${sls:stage}
-    ORDER_EVENTS_QUEUE_URL: https://sqs.${aws:region}.amazonaws.com/${aws:accountId}/order-events
+    ORDER_EVENTS_QUEUE_URL: https://sqs.${aws:region}.amazonaws.com/${aws:accountId}/order-platform-order-events-${sls:stage}
   iam:
     role:
       statements:
@@ -19,7 +19,7 @@ provider:
           Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/order-platform-tracking-${sls:stage}
         - Effect: Allow
           Action: sqs:ReceiveMessage
-          Resource: arn:aws:sqs:${aws:region}:${aws:accountId}:order-events
+          Resource: arn:aws:sqs:${aws:region}:${aws:accountId}:order-platform-order-events-${sls:stage}
 custom:
   localstack:
     stages:
@@ -36,5 +36,5 @@ functions:
     handler: ./src/handlers/processOrderEvent.handler
     events:
       - sqs:
-          arn: arn:aws:sqs:${aws:region}:${aws:accountId}:order-events
+          arn: arn:aws:sqs:${aws:region}:${aws:accountId}:order-platform-order-events-${sls:stage}
           batchSize: 1

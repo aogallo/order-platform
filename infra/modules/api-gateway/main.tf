@@ -1,7 +1,10 @@
 locals {
   route_resource_ids = {
     create-order = aws_api_gateway_resource.orders.id
+    list-orders = aws_api_gateway_resource.orders.id
+
     get-order    = aws_api_gateway_resource.order_id.id
+
     get-tracking = aws_api_gateway_resource.tracking_order_id.id
   }
 
