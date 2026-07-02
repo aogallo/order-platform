@@ -4,6 +4,10 @@ data "aws_lambda_function" "create_order" {
   function_name = "order-service-${var.env}-createOrder"
 }
 
+data "aws_lambda_function" "list_orders" {
+  function_name = "order-service-${var.env}-listOrders"
+}
+
 data "aws_lambda_function" "get_order" {
   function_name = "order-service-${var.env}-getOrderById"
 }
@@ -21,24 +25,31 @@ module "api_gateway" {
 
   routes = {
     create-order = {
-      path                 = "orders"
+      path                 = "/orders"
       method               = "POST"
       lambda_function_name = data.aws_lambda_function.create_order.function_name
-      lambda_invoke_arn    = data.aws_lambda_function.create_order.arn
+      lambda_invoke_arn    = data.aws_lambda_function.create_order.invoke_arn
+      auth_required        = true
+    }
+    list-orders = {
+      path                 = "/orders"
+      method               = "GET"
+      lambda_function_name = data.aws_lambda_function.list_orders.function_name
+      lambda_invoke_arn    = data.aws_lambda_function.list_orders.invoke_arn
       auth_required        = true
     }
     get-order = {
-      path                 = "orders/{id}"
+      path                 = "/orders/{id}"
       method               = "GET"
       lambda_function_name = data.aws_lambda_function.get_order.function_name
-      lambda_invoke_arn    = data.aws_lambda_function.get_order.arn
+      lambda_invoke_arn    = data.aws_lambda_function.get_order.invoke_arn
       auth_required        = true
     }
     get-tracking = {
-      path                 = "tracking/{orderId}"
+      path                 = "/tracking/{orderId}"
       method               = "GET"
       lambda_function_name = data.aws_lambda_function.get_tracking.function_name
-      lambda_invoke_arn    = data.aws_lambda_function.get_tracking.arn
+      lambda_invoke_arn    = data.aws_lambda_function.get_tracking.invoke_arn
       auth_required        = true
     }
   }

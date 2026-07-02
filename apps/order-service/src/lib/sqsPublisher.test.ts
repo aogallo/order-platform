@@ -1,4 +1,5 @@
-import { publishOrderCreated } from '../sqsPublisher'
+import { publishOrderCreated } from './sqsPublisher'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // mock SQS
 const mockSend = vi.hoisted(() => vi.fn())
@@ -17,7 +18,8 @@ describe('publishOrderCreated', () => {
   })
 
   it('publishes message when SQS_QUEUE_URL is set', async () => {
-    process.env.SQS_QUEUE_URL = 'http://localhost:4566/000000000000/order-events'
+    process.env.SQS_QUEUE_URL =
+      'http://localhost:4566/000000000000/order-platform-order-events-local'
     mockSend.mockResolvedValue({ MessageId: 'msg-123' })
 
     await publishOrderCreated({ orderId: 'order-1', total: 99.99 })
@@ -32,7 +34,8 @@ describe('publishOrderCreated', () => {
   })
 
   it('does not throw when SQS send fails', async () => {
-    process.env.SQS_QUEUE_URL = 'http://localhost:4566/000000000000/order-events'
+    process.env.SQS_QUEUE_URL =
+      'http://localhost:4566/000000000000/order-platform-order-events-local'
     mockSend.mockRejectedValue(new Error('Network error'))
 
     await expect(publishOrderCreated({ orderId: 'order-1', total: 99.99 })).resolves.not.toThrow()

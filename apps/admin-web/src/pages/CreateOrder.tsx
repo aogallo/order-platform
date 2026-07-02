@@ -1,29 +1,14 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import api from '../lib/axiosClient'
-import type { CreateOrderRequest, CreateOrderResponse } from '@order-platform/shared-types'
 import './CreateOrder.css'
+import { useCreateOrder } from '../hooks/useOrders'
 
 function CreateOrder() {
-  const navigate = useNavigate()
   const [item, setItem] = useState('')
   const [amount, setAmount] = useState('')
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: CreateOrderRequest) =>
-      api.post<CreateOrderResponse>('/orders', data).then((r) => r.data),
-    onSuccess: (data) => {
-      toast.success('Order created successfully!')
-      navigate(`/tracking?id=${data.id}`)
-    },
-    onError: () => {
-      toast.error('Failed to create order. Please try again.')
-    },
-  })
+  const { mutate, isPending } = useCreateOrder()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault()
     if (!item.trim() || !amount) return
 

@@ -45,7 +45,7 @@
 
 .home__cta--primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-primary-contrast);
 }
 
 .home__cta--primary:hover {

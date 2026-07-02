@@ -1,22 +1,18 @@
 locals {
-  route_segments = {
-    for k, r in var.routes : k => compact(split("/", trimprefix(r.path, "/")))
+  route_resource_ids = {
+    create-order = aws_api_gateway_resource.orders.id
+    list-orders = aws_api_gateway_resource.orders.id
+
+    get-order    = aws_api_gateway_resource.order_id.id
+
+    get-tracking = aws_api_gateway_resource.tracking_order_id.id
   }
 
-  path_keys = distinct(flatten([
-    for k, segments in local.route_segments : [
-      for i in range(length(segments)) : {
-        key        = join("/", slice(segments, 0, i + 1))
-        part       = segments[i]
-        parent_key = i == 0 ? null : join("/", slice(segments, 0, i))
-      }
-    ]
-  ]))
-
-  path_resources = { for pk in local.path_keys : pk.key => pk }
-
-  route_to_resource = {
-    for k, segments in local.route_segments : k => join("/", segments)
+  cors_resource_ids = {
+    orders            = aws_api_gateway_resource.orders.id
+    order_id          = aws_api_gateway_resource.order_id.id
+    tracking          = aws_api_gateway_resource.tracking.id
+    tracking_order_id = aws_api_gateway_resource.tracking_order_id.id
   }
 }
 
@@ -26,36 +22,54 @@ resource "aws_api_gateway_rest_api" "api" {
 }
 
 resource "aws_api_gateway_authorizer" "cognito" {
+  count         = var.cognito_user_pool_arn == null ? 0 : 1
   name          = "${var.project_name}-cognito-authorizer"
   type          = "COGNITO_USER_POOLS"
   rest_api_id   = aws_api_gateway_rest_api.api.id
   provider_arns = [var.cognito_user_pool_arn]
 }
-# --- Path resources (one per unique path segment) ---
-resource "aws_api_gateway_resource" "path" {
-  for_each = local.path_resources
-
+# --- Path resources ---
+resource "aws_api_gateway_resource" "orders" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  parent_id   = each.value.parent_key == null ? aws_api_gateway_rest_api.api.root_resource_id : aws_api_gateway_resource.path[each.value.parent_key].id
-  path_part   = each.value.part
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "orders"
 }
+
+resource "aws_api_gateway_resource" "order_id" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.orders.id
+  path_part   = "{id}"
+}
+
+resource "aws_api_gateway_resource" "tracking" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "tracking"
+}
+
+resource "aws_api_gateway_resource" "tracking_order_id" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.tracking.id
+  path_part   = "{orderId}"
+}
+
 
 # --- Methods + Integrations (one per route) ---
 resource "aws_api_gateway_method" "route" {
   for_each = var.routes
 
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.path[local.route_to_resource[each.key]].id
+  resource_id   = local.route_resource_ids[each.key]
   http_method   = upper(each.value.method)
   authorization = each.value.auth_required ? "COGNITO_USER_POOLS" : "NONE"
-  authorizer_id = each.value.auth_required ? aws_api_gateway_authorizer.cognito.id : null
+  authorizer_id = each.value.auth_required ? aws_api_gateway_authorizer.cognito[0].id : null
 }
 
 resource "aws_api_gateway_integration" "route" {
   for_each = var.routes
 
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.path[local.route_to_resource[each.key]].id
+  resource_id = local.route_resource_ids[each.key]
   http_method = aws_api_gateway_method.route[each.key].http_method
 
   integration_http_method = "POST"
@@ -65,17 +79,17 @@ resource "aws_api_gateway_integration" "route" {
 
 # --- CORS (OPTIONS preflight on every resource) ---
 resource "aws_api_gateway_method" "options" {
-  for_each      = local.path_resources
+  for_each      = local.cors_resource_ids
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.path[each.key].id
+  resource_id   = each.value
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "options" {
-  for_each    = local.path_resources
+  for_each    = local.cors_resource_ids
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.path[each.key].id
+  resource_id = each.value
   http_method = aws_api_gateway_method.options[each.key].http_method
   type        = "MOCK"
 
@@ -85,10 +99,10 @@ resource "aws_api_gateway_integration" "options" {
 }
 
 resource "aws_api_gateway_method_response" "options" {
-  for_each = local.path_resources
+  for_each = local.cors_resource_ids
 
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.path[each.key].id
+  resource_id = each.value
   http_method = aws_api_gateway_method.options[each.key].http_method
   status_code = "200"
 
@@ -100,9 +114,9 @@ resource "aws_api_gateway_method_response" "options" {
 }
 
 resource "aws_api_gateway_integration_response" "options" {
-  for_each    = local.path_resources
+  for_each    = local.cors_resource_ids
   rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.path[each.key].id
+  resource_id = each.value
   http_method = aws_api_gateway_method.options[each.key].http_method
   status_code = aws_api_gateway_method_response.options[each.key].status_code
 

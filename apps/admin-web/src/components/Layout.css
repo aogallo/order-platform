@@ -28,6 +28,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  flex: 1;
 }
 
 .sidebar__link {
@@ -57,4 +58,18 @@
   flex: 1;
   padding: 2rem;
   min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.sidebar__theme-toggle {
+  border-color: var(--color-sidebar-hover);
+  background: transparent;
+  color: var(--color-sidebar-text);
+  border-radius: 8px;
+  width: 100%;
+}
+
+.sidebar__theme-toggle:hover {
+  background: var(--color-sidebar-hover);
+  color: var(--color-sidebar-text-active);
 }

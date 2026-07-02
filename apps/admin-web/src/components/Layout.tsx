@@ -1,6 +1,7 @@
 import './Layout.css'
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
+import { ThemeToggle } from './ThemeToggle'
 
 interface LayoutProps {
   children: ReactNode
@@ -31,6 +32,7 @@ export const Layout = ({ children }: LayoutProps) => {
             Users
           </NavLink>
         </nav>
+        <ThemeToggle className="sidebar__theme-toggle" />
       </aside>
       <main className="main">{children}</main>
     </div>

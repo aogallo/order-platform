@@ -3,6 +3,7 @@ import { queryClient } from '../lib/queryClient'
 import { BrowserRouter } from 'react-router-dom'
 import type { PropsWithChildren } from 'react'
 import { AuthProvider } from './AuthProvider'
+import { ThemeProvider } from './ThemeProvider'
 import { Toaster } from 'sonner'
 
 const AppProviders = ({ children }: PropsWithChildren) => {
@@ -10,7 +11,9 @@ const AppProviders = ({ children }: PropsWithChildren) => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Toaster position="top-right" richColors />
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   )

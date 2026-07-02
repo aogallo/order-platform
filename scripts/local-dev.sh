@@ -33,6 +33,7 @@ export AWS_PAGER=""
 
 # Step 3.5: Pre-create SQS queues for Serverless event source mappings
 echo "--- Step 3.5: Pre-creating SQS queues ---"
+aws sqs create-queue --queue-name order-platform-order-events-local --endpoint-url "$AWS_ENDPOINT_URL" --region "$AWS_DEFAULT_REGION" 2>/dev/null || true
 aws sqs create-queue --queue-name order-events --endpoint-url "$AWS_ENDPOINT_URL" --region "$AWS_DEFAULT_REGION" 2>/dev/null || true
 aws sqs create-queue --queue-name order-notifications --endpoint-url "$AWS_ENDPOINT_URL" --region "$AWS_DEFAULT_REGION" 2>/dev/null || true
 
@@ -42,12 +43,13 @@ echo "--- Step 4 Deploying Serverless services ---"
 
 # Step 5: Apply Terraform infra (depends on Lambdas existing)
 echo "--- Step 5: Applying Terraform infra ---"
-tflocal -chdir="$ROOT_DIR/infra/environments/dev" init
-tflocal -chdir="$ROOT_DIR/infra/environments/dev" apply -auto-approve \
+tflocal -chdir="$ROOT_DIR/infra/environments/local" init
+tflocal -chdir="$ROOT_DIR/infra/environments/local" apply -auto-approve \
 	-target=module.order_events_dynamodb \
 	-target=module.tracking_dynamodb \
 	-target=module.order_events_sqs \
 	-target=module.order_events_s3 \
+	-target=module.api_gateway \
 	-var="project_name=order-platform" \
 	-var="env=local" \
 	-var="region=us-east-1" \

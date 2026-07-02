@@ -10,6 +10,8 @@ variable "env" {
 
 variable "cognito_user_pool_arn" {
   type        = string
+  default     = null
+  nullable    = true
   description = "ARN of the Cognito User Pool for the COGNITO_USER_POOLS authorizer"
 }
 
