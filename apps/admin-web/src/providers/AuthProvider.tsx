@@ -2,24 +2,29 @@ import { useCallback, useState, type PropsWithChildren } from 'react'
 import { getUserFromToken, cognitoLogout, cognitoLogin } from '../lib/cognito'
 import { AuthContext, type User } from '../context/auth'
 
+function toContextUser(info: ReturnType<typeof getUserFromToken>): User | null {
+  if (info?.email && info?.sub) {
+    return {
+      email: info.email,
+      sub: info.sub,
+      role: info.role,
+      groups: info.groups,
+    }
+  }
+
+  return null
+}
+
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<User | null>(() => {
-    const info = getUserFromToken()
-
-    if (info?.email && info?.sub) {
-      return { email: info.email, sub: info.sub }
-    }
-    return null
+    return toContextUser(getUserFromToken())
   })
 
   const [loading] = useState(false)
 
   const login = useCallback(async (email: string, password: string) => {
     await cognitoLogin(email, password)
-    const info = getUserFromToken()
-    if (info?.email && info?.sub) {
-      setUser({ email: info.email, sub: info.sub })
-    }
+    setUser(toContextUser(getUserFromToken()))
   }, [])
 
   const logout = useCallback(() => {

@@ -43,6 +43,20 @@ VITE_COGNITO_CLIENT_ID=your-client-id
 VITE_API_BASE_URL=http://localhost:4566
 ```
 
+### Local mock authentication
+
+Local development can bypass Cognito by explicitly enabling mock auth:
+
+```env
+VITE_AUTH_MODE=mock
+VITE_MOCK_AUTH_PASSWORD=password123
+```
+
+Mock auth provides fixed users for `admin@example.local`, `operator@example.local`, and
+`viewer@example.local`. `VITE_MOCK_AUTH_PASSWORD` is a shared local fixture exposed to the
+Vite client bundle; do not treat it as a secret. Any `VITE_AUTH_MODE` value other than `mock`
+keeps the real Cognito provider as the default.
+
 ## Project Structure
 
 ```
