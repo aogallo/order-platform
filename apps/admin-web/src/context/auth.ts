@@ -3,6 +3,8 @@ import { createContext } from 'react'
 export interface User {
   email: string
   sub: string
+  role?: 'admin' | 'operator' | 'viewer'
+  groups?: string[]
 }
 
 export interface AuthContextValue {
